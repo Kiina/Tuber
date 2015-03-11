@@ -1,4 +1,4 @@
-﻿namespace Tubesharp
+namespace Tubesharp
 
 module Youtube = 
     open System
@@ -258,8 +258,9 @@ module Youtube =
                          Url = di.Item("url")
                          Format = VideoFormatDictionary.Item(tag) })
                 |> Seq.sortBy (fun d -> d.Format.Preference)
-                |> Seq.sortBy (fun d -> d.Format.Height)
                 |> Seq.sortBy (fun d -> d.Format.Width)
+                |> Seq.sortBy (fun d -> d.Format.Height)
+                |> Seq.sortBy (fun d -> d.Format.FPS)
                 |> Seq.sortBy (fun d -> d.Format |> ExtensionPref)
             
             let selectedDl = Seq.last sortedVideo
@@ -271,11 +272,12 @@ module Youtube =
             
             let fileName = 
                 let format = selectedDl.Format
+                let fps = cleanName format.FPS
                 let width = cleanName format.Width
                 let height = cleanName format.Height
                 //get rid of spaces
                 let title = videoTitle.Replace(' ', '-')
-                sprintf "%s-%Ox%O.%s" title width height format.Extension
+                sprintf "%s-%Ox%O-%sfps.%s" title width height fps format.Extension
             
             //lets dl the file in a temp location
             printfn "Target file:%s" fileName
